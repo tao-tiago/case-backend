@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IsOptional, IsString, IsInt } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class QueryOptionsDto {
+export class QueryOptionsDTO {
   @IsOptional()
   @IsString()
   orderBy: string = 'createdAt';
@@ -14,7 +13,7 @@ export class QueryOptionsDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value as string, 10))
   @IsInt()
-  page: number = 1;
+  page: number = 0;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value as string, 10))
