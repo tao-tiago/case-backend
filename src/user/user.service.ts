@@ -2,8 +2,8 @@ import { Prisma, User } from '@prisma/client';
 import { Injectable, Logger } from '@nestjs/common';
 
 // Services
-import { PrismaService } from '../../src/common/modules/prisma/prisma.service';
-import { RedisService } from '../../src/common/modules/redis/redis.service';
+import { PrismaService } from 'src/common/modules/prisma/prisma.service';
+import { RedisService } from 'src/common/modules/redis/redis.service';
 
 import { IUser } from './user.types';
 
