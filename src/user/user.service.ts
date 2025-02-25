@@ -37,7 +37,7 @@ export class UserService implements IUser {
 
     const user = await this.prisma.user.create(payload);
 
-    await this.redis.saveData(`user:${user.id}`, JSON.stringify(user));
+    await this.redis.saveData(`user:${user.id}`, user);
   }
 
   async showUser(id: string) {
@@ -51,7 +51,7 @@ export class UserService implements IUser {
 
     const user = await this.prisma.user.update(payload);
 
-    await this.redis.saveData(`user:${user.id}`, JSON.stringify(user));
+    await this.redis.saveData(`user:${user.id}`, user);
   }
 
   async deleteUser(id: string) {
@@ -81,7 +81,7 @@ export class UserService implements IUser {
       }
     })
 
-    await this.redis.saveData(`user:${id}`, JSON.stringify(user));
+    await this.redis.saveData(`user:${id}`, user);
 
     return user;
   }
