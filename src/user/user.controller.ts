@@ -13,7 +13,7 @@ import {
   Query
 } from '@nestjs/common';
 
-import { QueryOptionsDTO } from 'src/common/helpers/query-options.dto';
+import { QueryOptionsDTO } from '../../src/common/helpers/query-options.dto';
 import { UserService } from './user.service';
 import { CreateUserDTO, UpdateUserDTO } from './user.types';
 
