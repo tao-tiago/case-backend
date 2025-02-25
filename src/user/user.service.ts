@@ -1,11 +1,18 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Injectable, Logger } from '@nestjs/common';
+
+// Services
 import { PrismaService } from 'src/common/modules/prisma/prisma.service';
+import { RedisService } from 'src/common/modules/redis/redis.service';
+
 import { IUser } from './user.types';
 
 @Injectable()
 export class UserService implements IUser {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private redis: RedisService
+  ) { }
 
   private logger = new Logger('UserService');
 
@@ -28,7 +35,9 @@ export class UserService implements IUser {
   async createUser(payload: Prisma.UserCreateArgs) {
     this.logger.log('createUser');
 
-    await this.prisma.user.create(payload);
+    const user = await this.prisma.user.create(payload);
+
+    await this.redis.saveData(`user:${user.id}`, JSON.stringify(user));
   }
 
   async showUser(id: string) {
@@ -40,7 +49,9 @@ export class UserService implements IUser {
   async updateUser(payload: Prisma.UserUpdateArgs) {
     this.logger.log('updateUser');
 
-    await this.prisma.user.update(payload);
+    const user = await this.prisma.user.update(payload);
+
+    await this.redis.saveData(`user:${user.id}`, JSON.stringify(user));
   }
 
   async deleteUser(id: string) {
@@ -51,16 +62,28 @@ export class UserService implements IUser {
         id
       }
     });
+
+    await this.redis.deleteData(`user:${id}`);
   }
 
   async findUserById(id: string) {
     this.logger.log('findUserById');
 
-    return await this.prisma.user.findUnique({
+    const userCache = await this.redis.getData(`user:${id}`) as User;
+
+    if (userCache) {
+      return userCache;
+    }
+
+    const user = await this.prisma.user.findUnique({
       where: {
         id
       }
     })
+
+    await this.redis.saveData(`user:${id}`, JSON.stringify(user));
+
+    return user;
   }
 
   async findUserByEmail(email: string) {

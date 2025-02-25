@@ -1,15 +1,26 @@
 import { Prisma } from '@prisma/client';
 
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Res } from '@nestjs/common';
-import { UserService } from './user.service';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query
+} from '@nestjs/common';
+
 import { QueryOptionsDTO } from 'src/common/helpers/query-options.dto';
+import { UserService } from './user.service';
 import { CreateUserDTO, UpdateUserDTO } from './user.types';
-import { Response } from 'express';
 
 @Controller('api/v1/users')
 export class UserController {
   constructor(
-    private readonly userService: UserService
+    private userService: UserService
   ) { }
 
   @Get()
@@ -31,8 +42,7 @@ export class UserController {
 
   @Post()
   async createUser(
-    @Body() createUserDTO: CreateUserDTO,
-    @Res() response: Response
+    @Body() createUserDTO: CreateUserDTO
   ) {
     const userExists = await this.userService.findUserByEmail(createUserDTO.email);
 
@@ -44,7 +54,7 @@ export class UserController {
       data: createUserDTO
     });
 
-    response.status(201).json({ message: ['Usuário criado com sucesso'] });
+    return { message: ['Usuário criado com sucesso'] }
   }
 
   @Get(':id')
@@ -63,8 +73,7 @@ export class UserController {
   @Put(':id')
   async updateUser(
     @Param('id') id: string,
-    @Body() updateUserDTO: UpdateUserDTO,
-    @Res() response: Response
+    @Body() updateUserDTO: UpdateUserDTO
   ) {
     const userExists = await this.userService.findUserById(id);
 
@@ -79,13 +88,12 @@ export class UserController {
       data: updateUserDTO
     });
 
-    response.status(200).json({ message: ['Usuário atualizado com sucesso'] });
+    return { message: ['Usuário atualizado com sucesso'] };
   }
 
   @Delete(':id')
   async deleteUser(
-    @Param('id') id: string,
-    @Res() response: Response
+    @Param('id') id: string
   ) {
     const userExists = await this.userService.findUserById(id);
 
@@ -95,6 +103,6 @@ export class UserController {
 
     await this.userService.deleteUser(id);
 
-    response.status(200).json({ message: ['Usuário excluído com sucesso'] });
+    return { message: ['Usuário excluído com sucesso'] };
   }
 }
